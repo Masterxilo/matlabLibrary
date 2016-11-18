@@ -1,0 +1,370 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>PoissonImageEditing</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-11-16"><meta name="DC.source" content="PoissonImageEditing.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">1. Solving the poisson equation</a></li><li><a href="#3">2. Example of seamless cloning</a></li><li><a href="#4">3. Example of gradient mixing</a></li><li><a href="#5">4. Example of hightlight removal</a></li></ul></div><pre class="codeinput"><span class="comment">% Simply run this file section by section to see the results that we have to show.</span>
+<span class="comment">%</span>
+<span class="comment">% See html/ for a published version of this document.</span>
+<span class="comment">%</span>
+<span class="comment">% Use the line with solve_poisson_equation_color instead of solve_poisson_equation2_color</span>
+<span class="comment">% to see Gauss-Seidel intermediate steps. This converges much worse.</span>
+
+addpath(<span class="string">'Implementation'</span>)
+</pre><h2>1. Solving the poisson equation<a name="2"></a></h2><p>See solve_poisson_equation(_color) and solve_poisson_equation2(_color).</p><p>The solve_poisson_equation*2* variant solves the sparse linear least squares system directly rather than using Gauss Seidel and is therefore much faster. But it does not have pretty intermediate steps.</p><p>As for solve_poisson_equation2: I think my equation system is a bit too big - I could combine the constraints for the laplacian into one row instead of having one row for each directional derivative.</p><h2>2. Example of seamless cloning<a name="3"></a></h2><pre class="codeinput">close <span class="string">all</span>
+
+<span class="comment">% --- Selection of dataset ---</span>
+a = <span class="string">'seamless_background1_Downsampled.jpg'</span>; b = <span class="string">'seamless_foreground1_Downsampled.jpg'</span>; c = <span class="string">'seamless_mask1_Downsampled.jpg'</span>; f =  0.25; <span class="comment">% * cuz otherwise the moon comes out too bright ;)</span>
+<span class="comment">%a = 'seamless_background1.jpg'; b = 'seamless_foreground1.jpg'; c = 'seamless_mask1.jpg'; f =  0.5; %</span>
+<span class="comment">% ---</span>
+
+target=imread8toDouble(<span class="string">'seamless_background1_Downsampled.jpg'</span>);
+source=imread8toDouble(<span class="string">'seamless_foreground1_Downsampled.jpg'</span>) * f;
+mask=imread8toDoubleGrayscale(<span class="string">'seamless_mask1_Downsampled.jpg'</span>) &gt; 0.5;
+
+show_image_in_figure(target, <span class="string">'Seamless cloning target image'</span>);
+show_image_in_figure(source, <span class="string">'Seamless cloning source image'</span>);
+show_image_in_figure(mask, <span class="string">'Seamless cloning mask, white -&gt; source, black -&gt; target'</span>);
+
+cp = [];
+<span class="keyword">for</span> i=1:3
+cp(:,:,i) = immask_combine(target(:,:,i), source(:,:,i), mask);
+<span class="keyword">end</span>
+show_image_in_figure(cp, <span class="string">'Seamless cloning: Crude cut-and-paste for comparison'</span>);
+
+<span class="comment">% Compute gradients</span>
+grad_target = forward_differences2_list_color(target);
+grad_source = forward_differences2_list_color(source);
+rmask = most(mask);
+gradients = grad_target;
+<span class="keyword">for</span> i=1:3 <span class="comment">% each channel</span>
+<span class="keyword">for</span> j = 1:2 <span class="comment">% each partial derivative</span>
+gradients(:,:,j,i) = immask_combine(grad_target(:,:,j,i), grad_source(:,:,j,i), rmask); <span class="comment">% Use grad_source where mask is 1</span>
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Ready to call solve_poisson_equation_color</span>
+
+output = solve_poisson_equation2_color(target, gradients, mask);
+<span class="comment">%output = solve_poisson_equation_color(target, gradients, mask, 100);</span>
+
+show_image_in_figure(output, <span class="string">'Seamless cloning: Poisson reconstruction result'</span>);
+</pre><pre class="codeoutput">color channel 1
+solve poisson equation2: building equation system...
+calling least_squares_for...
+least_squares_for preparation...526470
+least_squares_for solving 534041    7377, sparse?: 1
+reshaping the result...
+done
+color channel 2
+solve poisson equation2: building equation system...
+calling least_squares_for...
+least_squares_for preparation...526470
+least_squares_for solving 534041    7377, sparse?: 1
+reshaping the result...
+done
+color channel 3
+solve poisson equation2: building equation system...
+calling least_squares_for...
+least_squares_for preparation...526470
+least_squares_for solving 534041    7377, sparse?: 1
+reshaping the result...
+done
+</pre><img vspace="5" hspace="5" src="PoissonImageEditing_01.png" alt=""> <img vspace="5" hspace="5" src="PoissonImageEditing_02.png" alt=""> <img vspace="5" hspace="5" src="PoissonImageEditing_03.png" alt=""> <img vspace="5" hspace="5" src="PoissonImageEditing_04.png" alt=""> <img vspace="5" hspace="5" src="PoissonImageEditing_05.png" alt=""> <h2>3. Example of gradient mixing<a name="4"></a></h2><pre class="codeinput">close <span class="string">all</span>
+<span class="comment">% the order of these images is important given the mask (colors might be weird if swapped)</span>
+a = imread8toDouble(<span class="string">'gradientmixB1.png'</span>); <span class="comment">% gradientmixC2 gradientmix1 gradientmixB1</span>
+b = imread8toDouble(<span class="string">'gradientmixB2.png'</span>); <span class="comment">% gradientmixC1 gradientmix2 gradientmixB2</span>
+
+show_image_in_figure(a, <span class="string">'Gradient mixing: Background'</span>);
+show_image_in_figure(b, <span class="string">'Gradient mixing: Foreground'</span>);
+
+ag = forward_differences2_list_color(a);
+bg = forward_differences2_list_color(b);
+
+<span class="comment">% for gradientmix1|gradientmix2 pair</span>
+<span class="comment">%mask = imread8toDoubleGrayscale('gradientmix_mask.png') &gt; 0.5;</span>
+<span class="comment">% everything but the boundary</span>
+mask = zeros(size(a,1),size(a,2)); mask(2:end-1, 2:end-1) = 1; mask = mask == 1;
+
+g = [];
+<span class="comment">% component-wise</span>
+<span class="keyword">for</span> d=1:2
+<span class="keyword">for</span> c=1:3
+b_larger_mask = abs(bg(:,:,d,c)) &gt; abs(ag(:,:,d,c)); <span class="comment">% mask which is true when b is larger in magnitude</span>
+g(:,:,d,c) = immask_combine(ag(:,:,d,c),bg(:,:,d,c),b_larger_mask); <span class="comment">% this is not the same: max(ag(:,:,d,c), bg(:,:,d,c));</span>
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+
+output = solve_poisson_equation2_color(a, g, mask);
+<span class="comment">%output = solve_poisson_equation_color(a, g, mask,100); % this takes much too long</span>
+
+show_image_in_figure(output, <span class="string">'Gradient mixing: Poisson reconstruction result'</span>);
+</pre><pre class="codeoutput">color channel 1
+solve poisson equation2: building equation system...
+calling least_squares_for...
+least_squares_for preparation...374904
+least_squares_for solving 748562  372416, sparse?: 1
+reshaping the result...
+done
+color channel 2
+solve poisson equation2: building equation system...
+calling least_squares_for...
+least_squares_for preparation...374904
+least_squares_for solving 748562  372416, sparse?: 1
+reshaping the result...
+done
+color channel 3
+solve poisson equation2: building equation system...
+calling least_squares_for...
+least_squares_for preparation...374904
+least_squares_for solving 748562  372416, sparse?: 1
+reshaping the result...
+done
+</pre><img vspace="5" hspace="5" src="PoissonImageEditing_06.png" alt=""> <img vspace="5" hspace="5" src="PoissonImageEditing_07.png" alt=""> <img vspace="5" hspace="5" src="PoissonImageEditing_08.png" alt=""> <h2>4. Example of hightlight removal<a name="5"></a></h2><p>I was not quite sure how to apply the transformation suggested in the slides in the log domain.</p><p>So I developed a simple transformation which just downscales large gradients and leaves small ones unchanged. I think the results are similar.</p><pre class="codeinput">close <span class="string">all</span>
+
+a = imread8toDouble(<span class="string">'highlightremoval1.jpg'</span>); <span class="comment">% HighlightRemovalTarget.png highlightremoval1.jpg</span>
+g = forward_differences2_list_color(a);
+mask = imread8toDoubleGrayscale(<span class="string">'highlightremoval1_mask.png'</span>) &gt; 0.5;  <span class="comment">% for highlightremoval1</span>
+<span class="comment">%mask = imread8toDoubleGrayscale('HighlightRemovalMask.png') &lt; 0.5; % for HighlightRemovalTarget</span>
+
+show_image_in_figure(a, <span class="string">'Hightlight removal: Image'</span>);
+show_image_in_figure(mask, <span class="string">'Hightlight removal: Mask'</span>);
+
+
+show_image_in_figure(rescale01(g(:,:,1,2)), <span class="string">'Hightlight removal: Gradients before compression'</span>);
+
+<span class="comment">% compress within mask</span>
+<span class="keyword">for</span> c=1:3
+    <span class="keyword">for</span> y=1:imageHeight(a)
+    <span class="keyword">for</span> x=1:imageWidth(a)
+        <span class="keyword">if</span> mask(y,x)
+            g(y,x,:,c) = fake_gamma_compression(g(y,x,:,c), 0.1);<span class="comment">%0.5 * g(y,x,:,c);%fake_gamma_compression(g(y,x,:,c), sqrt(2)/2);</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+show_image_in_figure(rescale01(g(:,:,1,2)), <span class="string">'Hightlight removal: Gradients after compression'</span>);
+
+<span class="comment">% reconstruct</span>
+sol = solve_poisson_equation2_color(a,g,mask);
+<span class="comment">%sol = solve_poisson_equation_color(a,g,mask,100);</span>
+
+show_image_in_figure(sol, <span class="string">'Hightlight removal: Poisson reconstruction result'</span>);
+</pre><pre class="codeoutput">color channel 1
+solve poisson equation2: building equation system...
+calling least_squares_for...
+least_squares_for preparation...272640
+least_squares_for solving 278981    6054, sparse?: 1
+reshaping the result...
+done
+color channel 2
+solve poisson equation2: building equation system...
+calling least_squares_for...
+least_squares_for preparation...272640
+least_squares_for solving 278981    6054, sparse?: 1
+reshaping the result...
+done
+color channel 3
+solve poisson equation2: building equation system...
+calling least_squares_for...
+least_squares_for preparation...272640
+least_squares_for solving 278981    6054, sparse?: 1
+reshaping the result...
+done
+</pre><img vspace="5" hspace="5" src="PoissonImageEditing_09.png" alt=""> <img vspace="5" hspace="5" src="PoissonImageEditing_10.png" alt=""> <img vspace="5" hspace="5" src="PoissonImageEditing_11.png" alt=""> <img vspace="5" hspace="5" src="PoissonImageEditing_12.png" alt=""> <img vspace="5" hspace="5" src="PoissonImageEditing_13.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+% Simply run this file section by section to see the results that we have to show.
+%
+% See html/ for a published version of this document.
+%
+% Use the line with solve_poisson_equation_color instead of solve_poisson_equation2_color
+% to see Gauss-Seidel intermediate steps. This converges much worse.
+
+addpath('Implementation')
+
+
+%% 1. Solving the poisson equation
+% See solve_poisson_equation(_color) and solve_poisson_equation2(_color).
+%
+% The solve_poisson_equation*2* variant solves the sparse linear least squares system directly rather 
+% than using Gauss Seidel and is therefore much faster.
+% But it does not have pretty intermediate steps.
+%
+% As for solve_poisson_equation2:
+% I think my equation system is a bit too big - I could combine the constraints for the laplacian 
+% into one row instead of having one row for each directional derivative.
+
+%% 2. Example of seamless cloning
+close all
+
+% REPLACE_WITH_DASH_DASH- Selection of dataset REPLACE_WITH_DASH_DASH-
+a = 'seamless_background1_Downsampled.jpg'; b = 'seamless_foreground1_Downsampled.jpg'; c = 'seamless_mask1_Downsampled.jpg'; f =  0.25; % * cuz otherwise the moon comes out too bright ;)
+%a = 'seamless_background1.jpg'; b = 'seamless_foreground1.jpg'; c = 'seamless_mask1.jpg'; f =  0.5; %
+% REPLACE_WITH_DASH_DASH-
+
+target=imread8toDouble('seamless_background1_Downsampled.jpg');
+source=imread8toDouble('seamless_foreground1_Downsampled.jpg') * f; 
+mask=imread8toDoubleGrayscale('seamless_mask1_Downsampled.jpg') > 0.5; 
+
+show_image_in_figure(target, 'Seamless cloning target image');
+show_image_in_figure(source, 'Seamless cloning source image');
+show_image_in_figure(mask, 'Seamless cloning mask, white -> source, black -> target');
+
+cp = [];
+for i=1:3
+cp(:,:,i) = immask_combine(target(:,:,i), source(:,:,i), mask);
+end
+show_image_in_figure(cp, 'Seamless cloning: Crude cut-and-paste for comparison');
+
+% Compute gradients
+grad_target = forward_differences2_list_color(target);
+grad_source = forward_differences2_list_color(source);
+rmask = most(mask);
+gradients = grad_target;
+for i=1:3 % each channel
+for j = 1:2 % each partial derivative
+gradients(:,:,j,i) = immask_combine(grad_target(:,:,j,i), grad_source(:,:,j,i), rmask); % Use grad_source where mask is 1
+end
+end
+
+% Ready to call solve_poisson_equation_color
+
+output = solve_poisson_equation2_color(target, gradients, mask);
+%output = solve_poisson_equation_color(target, gradients, mask, 100);
+
+show_image_in_figure(output, 'Seamless cloning: Poisson reconstruction result');
+
+%% 3. Example of gradient mixing
+close all
+% the order of these images is important given the mask (colors might be weird if swapped)
+a = imread8toDouble('gradientmixB1.png'); % gradientmixC2 gradientmix1 gradientmixB1
+b = imread8toDouble('gradientmixB2.png'); % gradientmixC1 gradientmix2 gradientmixB2
+
+show_image_in_figure(a, 'Gradient mixing: Background');
+show_image_in_figure(b, 'Gradient mixing: Foreground');
+
+ag = forward_differences2_list_color(a);
+bg = forward_differences2_list_color(b);
+
+% for gradientmix1|gradientmix2 pair
+%mask = imread8toDoubleGrayscale('gradientmix_mask.png') > 0.5;
+% everything but the boundary
+mask = zeros(size(a,1),size(a,2)); mask(2:end-1, 2:end-1) = 1; mask = mask == 1;
+
+g = [];
+% component-wise
+for d=1:2
+for c=1:3
+b_larger_mask = abs(bg(:,:,d,c)) > abs(ag(:,:,d,c)); % mask which is true when b is larger in magnitude
+g(:,:,d,c) = immask_combine(ag(:,:,d,c),bg(:,:,d,c),b_larger_mask); % this is not the same: max(ag(:,:,d,c), bg(:,:,d,c));
+end
+end
+
+output = solve_poisson_equation2_color(a, g, mask);
+%output = solve_poisson_equation_color(a, g, mask,100); % this takes much too long
+
+show_image_in_figure(output, 'Gradient mixing: Poisson reconstruction result');
+
+%% 4. Example of hightlight removal
+% I was not quite sure how to apply the transformation suggested in the slides in the log domain.
+%
+% So I developed a simple transformation which just downscales large gradients and leaves small ones
+% unchanged. I think the results are similar.
+close all
+
+a = imread8toDouble('highlightremoval1.jpg'); % HighlightRemovalTarget.png highlightremoval1.jpg
+g = forward_differences2_list_color(a);
+mask = imread8toDoubleGrayscale('highlightremoval1_mask.png') > 0.5;  % for highlightremoval1
+%mask = imread8toDoubleGrayscale('HighlightRemovalMask.png') < 0.5; % for HighlightRemovalTarget
+
+show_image_in_figure(a, 'Hightlight removal: Image');
+show_image_in_figure(mask, 'Hightlight removal: Mask');
+
+
+show_image_in_figure(rescale01(g(:,:,1,2)), 'Hightlight removal: Gradients before compression');
+
+% compress within mask
+for c=1:3
+    for y=1:imageHeight(a)
+    for x=1:imageWidth(a)
+        if mask(y,x)
+            g(y,x,:,c) = fake_gamma_compression(g(y,x,:,c), 0.1);%0.5 * g(y,x,:,c);%fake_gamma_compression(g(y,x,:,c), sqrt(2)/2);
+        end
+    end
+    end
+end
+
+show_image_in_figure(rescale01(g(:,:,1,2)), 'Hightlight removal: Gradients after compression');
+
+% reconstruct
+sol = solve_poisson_equation2_color(a,g,mask);
+%sol = solve_poisson_equation_color(a,g,mask,100);
+
+show_image_in_figure(sol, 'Hightlight removal: Poisson reconstruction result');
+
+##### SOURCE END #####
+--></body></html>

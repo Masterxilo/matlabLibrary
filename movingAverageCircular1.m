@@ -13,7 +13,7 @@ function B = movingAverageCircular1(A, n)
   %
   
   assert(length(size(A)) == 2);
-  assert(mod(n,2) == 1);
+  assert(oddQ(n));
   assert(n >= 3);
   
   width = matrixWidth(A);

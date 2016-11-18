@@ -1,0 +1,1 @@
+imshow_in_figure(bfilt_tonemap(hdrread('memorial_o876.hdr')+0.00001, 10), 'bfilt_tonemap on memorial_o876')

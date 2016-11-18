@@ -1,0 +1,1 @@
+assert(allX(zeros(3,3,3)==0));

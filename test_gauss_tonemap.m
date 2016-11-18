@@ -1,0 +1,1 @@
+imshow_in_figure(gauss_tonemap(hdrread('memorial_o876.hdr')+0.00001, 10, 3), 'gauss_tonemap on memorial_o876')

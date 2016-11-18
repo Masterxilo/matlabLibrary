@@ -11,4 +11,9 @@ function B = movingAverageCircular(A, n)
   % equivalent to imfilter(grayImage, ones(n)/n^2, 'circular')
   %
   
-  B = movingAverageCircular2(movingAverageCircular1(A, n), n);
+  assert(ismatrix(A));
+  assert(oddQ(n));
+  
+  B = movingAverageCircularImpl1(A, n);
+  
+  assert_same_size(A,B);
