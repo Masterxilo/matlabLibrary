@@ -1,12 +1,12 @@
 function mask = imfreehand_mask_image(image)
     % display a crude GUI on top of image to allow user to draw a binary
-    % maks of the same size of the region to indicate a set of pixels on
-    % the image.
+    % mask of the same size to indicate a set of pixels on the image
+    % islogical(mask)
     
     mask = zeros(imageHeight(image), imageWidth(image));
     
-message = sprintf('Left click and hold to begin drawing one connected part of the region.\nSimply lift the mouse button to finish');
-        uiwait(msgbox(message));
+    message = sprintf('Left click and hold to begin drawing one connected part of the region.\nSimply lift the mouse button to finish');
+    uiwait(msgbox(message));
         
     while 1
         % Creating a binary mask using imfreehand:
@@ -22,7 +22,7 @@ message = sprintf('Left click and hold to begin drawing one connected part of th
         % Create a binary image ("mask") from the ROI object.
         binaryImage = hFH.createMask();
         % Display the freehand mask.
-        mask = mask + binaryImage;
+        mask = mask | binaryImage; % don't use + because of == below!
         imshow(mask);
         title('Binary mask of the region');
         
@@ -47,3 +47,4 @@ end
     end
     
     mask = mask == 1; % to logical
+    assert(islogical(mask));

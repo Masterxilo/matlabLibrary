@@ -1,0 +1,3 @@
+2016/11/28 13:04 Paul Frischknecht made some small modifications to make this suited for the intended purpose (cutting out the panorama stitching result).
+
+Source: http://ch.mathworks.com/matlabcentral/fileexchange/28155-inscribed-rectangle

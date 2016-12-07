@@ -1,0 +1,1 @@
+assert(isfile('test_isfile.m'))

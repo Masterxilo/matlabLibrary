@@ -1,0 +1,3 @@
+close all
+match_show_vert(single_color_rgb_image([100 100],[1 0 0]), [1 50;1 50], ...
+  single_color_rgb_image([100 100],[1 1 0]), [100 1;100 1])

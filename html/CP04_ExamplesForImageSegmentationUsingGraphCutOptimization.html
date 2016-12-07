@@ -1,0 +1,158 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>CP04_ExamplesForImageSegmentationUsingGraphCutOptimization</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-12-04"><meta name="DC.source" content="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Example 1</a></li><li><a href="#3">Example 2</a></li></ul></div><pre class="codeinput"><span class="comment">% Computational Photography Project 04, P8140</span>
+<span class="comment">% See html/ for published version of this</span>
+<span class="comment">% We use more color components for the gmms (Gaussian Mixture Models) for 'better' results</span>
+</pre><h2>Example 1<a name="2"></a></h2><pre class="codeinput">imsegment2_demo(<span class="string">'imsegment2_example1.jpg'</span>,<span class="string">'imsegment2_example1_foreground_mask.jpg'</span>,<span class="string">'imsegment2_example1_background_mask.jpg'</span>,4);
+</pre><pre class="codeoutput">&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+map each pixel in progress...
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+map each pixel in progress...
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+constructing UNARY...
+constructing PAIRWISE...
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+GCMex 272640
+
+ENERGY =
+
+   5.7663e+05
+
+
+ENERGYAFTER =
+
+  -5.3504e+05
+
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+</pre><img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_01.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_02.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_03.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_04.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_05.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_06.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_07.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_08.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_09.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_10.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_11.png" alt=""> <h2>Example 2<a name="3"></a></h2><p>this has lots of colors</p><pre class="codeinput">imsegment2_demo(<span class="string">'imsegment2_example2.jpg'</span>,<span class="string">'imsegment2_example2_foreground_mask.jpg'</span>,<span class="string">'imsegment2_example2_background_mask.jpg'</span>,6);
+</pre><pre class="codeoutput">&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+map each pixel in progress...
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+map each pixel in progress...
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+constructing UNARY...
+constructing PAIRWISE...
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+GCMex 273280
+
+ENERGY =
+
+   2.1913e+06
+
+
+ENERGYAFTER =
+
+  -5.0767e+05
+
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+&#35686;&#21578;: WindowStyle &#12364; 'docked' &#12398;&#38291;&#12399; Position &#12434;&#35373;&#23450;&#12391;&#12365;&#12414;&#12379;&#12435; 
+&#35686;&#21578;: &#12452;&#12513;&#12540;&#12472;&#12398;&#21021;&#26399;&#20493;&#29575;&#12364;&#12289;&#12489;&#12483;&#12461;&#12531;&#12464;&#12373;&#12428;&#12383; Figure &#12391; 'fit' &#12395;&#35373;&#23450;&#12373;&#12428;&#12390;&#12356;&#12414;&#12377;&#12290; 
+</pre><img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_12.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_13.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_14.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_15.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_16.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_17.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_18.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_19.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_20.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_21.png" alt=""> <img vspace="5" hspace="5" src="CP04_ExamplesForImageSegmentationUsingGraphCutOptimization_22.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+% Computational Photography Project 04, P8140
+% See html/ for published version of this
+% We use more color components for the gmms (Gaussian Mixture Models) for 'better' results
+
+
+%% Example 1
+imsegment2_demo('imsegment2_example1.jpg','imsegment2_example1_foreground_mask.jpg','imsegment2_example1_background_mask.jpg',4);
+
+%% Example 2
+% this has lots of colors
+imsegment2_demo('imsegment2_example2.jpg','imsegment2_example2_foreground_mask.jpg','imsegment2_example2_background_mask.jpg',6);
+##### SOURCE END #####
+--></body></html>

@@ -9,11 +9,13 @@ function output_list = least_squares_for(A, b, target_list, binary_mask)
   assert(isreal(b));
   assert(islogical(binary_mask));
   n = length(target_list);
-  assert(all(size(A) == [length(b) n]));
+  assert_equal(size(A), [length(b) n]);
   assert(length(binary_mask) == n);
   b = b(:); % make b column vector
 
-  disp(['least_squares_for preparation...' num2str(n)]);
+  if n > 1000
+    disp(['least_squares_for preparation...' num2str(n)]);
+  end
   % fix the variables that are not unknown by moving them to the right side
   
   %for i=find(binary_mask == 0)'
@@ -33,7 +35,9 @@ function output_list = least_squares_for(A, b, target_list, binary_mask)
   A = A(:,binary_mask);
 
   % solve the least squares problem
-  disp(['least_squares_for solving ' num2str(size(A)) ', sparse?: ' num2str(issparse(A))]);
+  if n > 1000
+    disp(['least_squares_for solving ' num2str(size(A)) ', sparse?: ' num2str(issparse(A))]);
+  end
   sol = A\b;
 
   % insert the rest

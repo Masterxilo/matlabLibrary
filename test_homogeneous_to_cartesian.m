@@ -1,0 +1,1 @@
+assert_equal(homogeneous_to_cartesian([1 2 3]), [1 2]/3);

@@ -1,21 +1,16 @@
 function out = demosaicBayer(img)
+    % similar to C53 (LerpDebayer), but operates on doubles in [0,1].
+    %
     % img is a m x n 2D matrix that represents a color image using a Bayer
     % pattern
     % out is a m * n * 3 matrix that represents a color image with per
     % pixel RGB values
-    
+    %
     % All color values should be in [0,1]
     
-    maskR = zeros(size(img));
-    maskG = maskR;
-    maskB = maskR;
+    assert(ismatrix(img));
     
-    maskR(1:2:end, 1:2:end) = 1;
-    
-    maskG(2:2:end, 1:2:end) = 1;
-    maskG(1:2:end, 2:2:end) = 1;
-    
-    maskB(2:2:end, 2:2:end) = 1;
+    [maskR, maskG, maskB] = demosaicBayerMakeMasks(size(img));
     
     % Apply
     maskedR = maskR .* img;
