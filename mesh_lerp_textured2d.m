@@ -20,9 +20,11 @@ function result_image = mesh_lerp_textured2d(verticesA, textureA, verticesB, tex
     
     result_vertices = (1-factor) .* verticesA + factor .* verticesB; % TODO is the formula x + s(y - x) faster?
     
-    result_imageA = mesh_textured2d(result_vertices, verticesA, triangles, textureA, output_size);
-    result_imageB = mesh_textured2d(result_vertices, verticesB, triangles, textureB, output_size);
-    
+    %result_imageA = mesh_textured2d(result_vertices, verticesA, triangles, textureA, output_size);
+    %result_imageB = mesh_textured2d(result_vertices, verticesB, triangles, textureB, output_size);
+    % 10-25% faster
+    [result_imageA, result_imageB] = mesh_textured2d_multitexture(result_vertices, triangles, verticesA, textureA, verticesB, textureB, output_size);
+      
     assert_same_size(result_imageA, result_imageB);
     
     result_image = (1-factor) .* result_imageA + factor .* result_imageB;

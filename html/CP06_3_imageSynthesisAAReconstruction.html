@@ -1,0 +1,249 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>CP06_3_imageSynthesisAAReconstruction</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-12-20"><meta name="DC.source" content="CP06_3_imageSynthesisAAReconstruction.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">3.1 4D Gaussian filter</a></li><li><a href="#3">Visualizations of slices the kernel for different slopes.</a></li><li><a href="#4">Slope 1</a></li><li><a href="#5">Slope 0.2</a></li><li><a href="#6">Applying the filter</a></li><li><a href="#7">Foreground</a></li><li><a href="#8">Background</a></li><li><a href="#9">3.2 Image synthesis reconstruction without aliasing</a></li><li><a href="#10">Comparing the results using three different spatial standard deviations to blur</a></li><li><a href="#11">Visualize at least two focus planes using your implementation</a></li><li><a href="#12">Background</a></li><li><a href="#13">Foreground</a></li><li><a href="#14">3.3 Comparison with LFFiltShiftSum</a></li><li><a href="#15">Background</a></li><li><a href="#16">Foreground</a></li><li><a href="#17">Lytro Desktop result</a></li></ul></div><pre class="codeinput"><span class="comment">% For Computational Photography, Project 06, P8146</span>
+<span class="comment">% Task 3</span>
+<span class="comment">%</span>
+<span class="comment">% see html/ for a compiled version of this</span>
+</pre><h2>3.1 4D Gaussian filter<a name="2"></a></h2><p>see gaussian4d_unnormalized and covariance_matrix_shear4.</p><h2>Visualizations of slices the kernel for different slopes.<a name="3"></a></h2><p>I call the four dimensions (x,y,z,w) instead of (u,v,x,y).</p><pre class="codeinput"><span class="comment">% different sigmas to test (change the order to select one)</span>
+s = repmat(sqrt(2), 1, 4);
+s = [2 2 2 2];
+s = [1 2 2 2]; <span class="comment">% more flat in x direction</span>
+s = [2 1 2 2]; <span class="comment">% more flat in y direction</span>
+s = [2 2 1 2]*2; <span class="comment">% make more flat in z direction for more interesting look</span>
+
+<span class="comment">% make sure this is big enough to showcase what we want to see</span>
+out_size = repmat(35, 1, 4);
+</pre><h2>Slope 1<a name="4"></a></h2><pre class="codeinput">close <span class="string">all</span>
+CP06_show_shear_kernel(s,out_size, 1);
+</pre><img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_01.png" alt=""> <img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_02.png" alt=""> <img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_03.png" alt=""> <h2>Slope 0.2<a name="5"></a></h2><pre class="codeinput">close <span class="string">all</span>
+CP06_show_shear_kernel(s,out_size, 0.2);
+</pre><img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_04.png" alt=""> <img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_05.png" alt=""> <img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_06.png" alt=""> <h2>Applying the filter<a name="6"></a></h2><p>We can already use this to do refocusing.</p><p>I can't really tell whether the results are any better with the more elaborate filter used further below.</p><pre class="codeinput">x = load(<span class="string">'IMG_0099__Decoded.LFToolbox.mat'</span>);
+lf = x.LF;
+
+<span class="comment">% Extract only inner 7x7 colors for confident</span>
+<span class="comment">% parts of the image (outermost boundary pixels have 0 confidence everywhere!), c.f. test_LF.m</span>
+lffc = uint16toUnorm(lf(8-3:8+3,8-3:8+3,3:end-2,3:end-2,1:3));  <span class="comment">% ca. 1.5 GB/4</span>
+</pre><h2>Foreground<a name="7"></a></h2><pre class="codeinput">spat = 0.5;
+ang = 7;
+std = [ang,ang, spat,spat]; sz = ceil([7 7 spat*3 spat*3]);
+slope = 0.4;
+
+gauss = gaussian4d(sz,covariance_matrix_shear4(std, slope));
+
+conved = convn(lffc, gauss, <span class="string">'valid'</span>);
+
+close <span class="string">all</span>
+imshow_in_figure(2*squeeze(conved), [<span class="string">'4d gaussian with slope '</span> num2str(slope)]);
+</pre><img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_07.png" alt=""> <h2>Background<a name="8"></a></h2><pre class="codeinput">slope = -0.4;
+
+gauss = gaussian4d(sz,covariance_matrix_shear4(std, slope));
+conved = convn(lffc, gauss, <span class="string">'valid'</span>);
+close <span class="string">all</span>
+imshow_in_figure(2*squeeze(conved), [<span class="string">'4d gaussian with slope '</span> num2str(slope)]);
+</pre><img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_08.png" alt=""> <h2>3.2 Image synthesis reconstruction without aliasing<a name="9"></a></h2><p>Filtering in stages..</p><h2>Comparing the results using three different spatial standard deviations to blur<a name="10"></a></h2><p>the light field images</p><pre class="codeinput">close <span class="string">all</span>
+
+slope = -0.4;
+CP06_3_2_show_spatial_blur(lffc, slope, 0.2)
+CP06_3_2_show_spatial_blur(lffc, slope, 1) <span class="comment">% this blurs the foregroud more, making the effect nicer</span>
+CP06_3_2_show_spatial_blur(lffc, slope, 3)<span class="comment">% takes a very long time (and looks horrible)</span>
+</pre><img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_09.png" alt=""> <img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_10.png" alt=""> <img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_11.png" alt=""> <h2>Visualize at least two focus planes using your implementation<a name="11"></a></h2><p>with the intermediate filtered results:</p><div><ul><li>spatial and angular lowpass as well as their convolution</li><li>ears, i.e. angular-lowpass minus spatial lowpass (a kind of sharpening effect that is later added to the result)</li></ul></div><h2>Background<a name="12"></a></h2><pre class="codeinput">close <span class="string">all</span>
+CP06_3_2_show_plane_with_intermediates(lffc, -0.4)
+</pre><img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_12.png" alt=""> <img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_13.png" alt=""> <img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_14.png" alt=""> <img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_15.png" alt=""> <img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_16.png" alt=""> <img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_17.png" alt=""> <h2>Foreground<a name="13"></a></h2><pre class="codeinput">close <span class="string">all</span>
+CP06_3_2_show_plane_with_intermediates(lffc, 0.4)
+</pre><img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_18.png" alt=""> <img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_19.png" alt=""> <img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_20.png" alt=""> <img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_21.png" alt=""> <img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_22.png" alt=""> <img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_23.png" alt=""> <h2>3.3 Comparison with LFFiltShiftSum<a name="14"></a></h2><p>I am not controlling the blur kernel sizes they are using, and maybe they have another algorithm. Therefore the results are not exactly the same as mine.</p><p>As I mentioned earlier, I don't know if everything works as well as it could in my implementation, or whether I have chosen nice parameters.</p><h2>Background<a name="15"></a></h2><pre class="codeinput">close <span class="string">all</span>
+slope = -0.4;
+r = LFFiltShiftSum(lf, slope);
+imshow_in_figure(2*r(:,:,1:3), [<span class="string">'LFFiltShiftSum, '</span> num2str(slope) <span class="string">' slope'</span>]);
+</pre><pre class="codeoutput">...............</pre><img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_24.png" alt=""> <h2>Foreground<a name="16"></a></h2><pre class="codeinput">close <span class="string">all</span>
+slope = 0.4;
+r = LFFiltShiftSum(lf, slope);
+imshow_in_figure(2*r(:,:,1:3), [<span class="string">'LFFiltShiftSum, '</span> num2str(slope) <span class="string">' slope'</span>]);
+</pre><pre class="codeoutput">...............</pre><img vspace="5" hspace="5" src="CP06_3_imageSynthesisAAReconstruction_25.png" alt=""> <h2>Lytro Desktop result<a name="17"></a></h2><p>see myresult lytroresult bg.png and myresult lytroresult fg.png to realize how much more superior their blurring &amp; color correction is ;)</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+% For Computational Photography, Project 06, P8146
+% Task 3
+%
+% see html/ for a compiled version of this
+
+%% 3.1 4D Gaussian filter
+% see gaussian4d_unnormalized and covariance_matrix_shear4.
+%
+
+%% Visualizations of slices the kernel for different slopes.
+%
+% I call the four dimensions (x,y,z,w) instead of (u,v,x,y).
+
+% different sigmas to test (change the order to select one)
+s = repmat(sqrt(2), 1, 4);
+s = [2 2 2 2];
+s = [1 2 2 2]; % more flat in x direction
+s = [2 1 2 2]; % more flat in y direction
+s = [2 2 1 2]*2; % make more flat in z direction for more interesting look
+
+% make sure this is big enough to showcase what we want to see
+out_size = repmat(35, 1, 4);
+
+%% Slope 1
+close all 
+CP06_show_shear_kernel(s,out_size, 1);
+
+%% Slope 0.2
+close all 
+CP06_show_shear_kernel(s,out_size, 0.2);
+
+%% Applying the filter
+% We can already use this to do refocusing.
+%
+% I can't really tell whether the results are any better with the more
+% elaborate filter used further below.
+
+x = load('IMG_0099__Decoded.LFToolbox.mat');
+lf = x.LF;
+
+% Extract only inner 7x7 colors for confident
+% parts of the image (outermost boundary pixels have 0 confidence everywhere!), c.f. test_LF.m
+lffc = uint16toUnorm(lf(8-3:8+3,8-3:8+3,3:end-2,3:end-2,1:3));  % ca. 1.5 GB/4
+
+%% Foreground
+spat = 0.5;
+ang = 7;
+std = [ang,ang, spat,spat]; sz = ceil([7 7 spat*3 spat*3]); 
+slope = 0.4;
+
+gauss = gaussian4d(sz,covariance_matrix_shear4(std, slope));
+
+conved = convn(lffc, gauss, 'valid'); 
+
+close all 
+imshow_in_figure(2*squeeze(conved), ['4d gaussian with slope ' num2str(slope)]);
+
+%% Background
+slope = -0.4;
+
+gauss = gaussian4d(sz,covariance_matrix_shear4(std, slope));
+conved = convn(lffc, gauss, 'valid'); 
+close all 
+imshow_in_figure(2*squeeze(conved), ['4d gaussian with slope ' num2str(slope)]);
+
+%% 3.2 Image synthesis reconstruction without aliasing
+% Filtering in stages..
+
+
+%% Comparing the results using three different spatial standard deviations to blur
+% the light field images
+
+close all 
+
+slope = -0.4;
+CP06_3_2_show_spatial_blur(lffc, slope, 0.2)
+CP06_3_2_show_spatial_blur(lffc, slope, 1) % this blurs the foregroud more, making the effect nicer
+CP06_3_2_show_spatial_blur(lffc, slope, 3)% takes a very long time (and looks horrible)
+
+%%  Visualize at least two focus planes using your implementation
+% with the intermediate filtered results:
+%
+% * spatial and angular lowpass as well as their convolution
+% * ears, i.e. angular-lowpass minus spatial lowpass (a kind of sharpening
+% effect that is later added to the result)
+
+%% Background
+close all 
+CP06_3_2_show_plane_with_intermediates(lffc, -0.4)
+
+%% Foreground
+close all 
+CP06_3_2_show_plane_with_intermediates(lffc, 0.4)
+
+%% 3.3 Comparison with LFFiltShiftSum
+% I am not controlling the blur kernel sizes they are using, and maybe
+% they have another algorithm. Therefore the results are not exactly the
+% same as mine.
+%
+% As I mentioned earlier, I don't know if everything works as well as it
+% could in my implementation, or whether I have chosen nice parameters.
+
+%% Background
+close all 
+slope = -0.4;
+r = LFFiltShiftSum(lf, slope);
+imshow_in_figure(2*r(:,:,1:3), ['LFFiltShiftSum, ' num2str(slope) ' slope']);
+
+%% Foreground
+close all 
+slope = 0.4;
+r = LFFiltShiftSum(lf, slope);
+imshow_in_figure(2*r(:,:,1:3), ['LFFiltShiftSum, ' num2str(slope) ' slope']);
+
+%% Lytro Desktop result
+% see myresult lytroresult bg.png and myresult lytroresult fg.png
+% to realize how much more superior their blurring & color correction is ;)
+
+
+##### SOURCE END #####
+--></body></html>

@@ -1,4 +1,7 @@
 %basically the same as test_mesh_lerp_textured2d_4
+% creates a movie interpolating between two faces
+% c.f. CP05_1_morphTool
+
 close all 
 image1 = face1_1000();
 image2 = face2_1000();

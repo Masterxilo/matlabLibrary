@@ -1,0 +1,1 @@
+assert(string_equal(computer_name(), computer_name()))

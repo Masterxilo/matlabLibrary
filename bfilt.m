@@ -4,6 +4,11 @@ function out = bfilt(im, sigma_s, sigma_r)
     %
     % im a 2d grayscale image in double format, values from 0 to x (can be
     % hdr/log domain)
+    %
+    % Implemented for Computational Photography.
+    % Not optimized.
+    % The gaussian matrix constructed here could also be constructed by
+    % imspecial
     
     assert(ismatrix(im))
     assert(isreal(sigma_s));
@@ -20,10 +25,7 @@ function out = bfilt(im, sigma_s, sigma_r)
     len = 2*w + 1;
     
     %  construct gaussian filter mask
-    distances2 = repmat(-w:w, len, 1).^2;
-    distances2 = distances2 + repmat((-w:w)', 1, len).^2;
-    
-    gauss = exp(-distances2 / (2*sigma_s^2));
+    gauss = gaussian2d_unormalized();
     
     assert(all(size(gauss) == [len len]));
     

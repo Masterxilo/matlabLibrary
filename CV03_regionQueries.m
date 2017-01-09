@@ -1,14 +1,23 @@
+% For Computer Vision class
+
 % Select image region, find all images most closely matching the histogram
 % *computed only from this region*.
 % Other than this, fullFrameQueries is quite similar (it just defines the
 % whole image as the region).
 
 %% dataset - could use any set of images with computed vocabulary
-v = CV03_dataAintNobody_vocabulary();
+% c.f. CV03_dataAintNobody, CV03_buildVocabulary
+
+% Image set ('movie')
 n = CV03_dataAintNobody_framecount();
 images_f = @CV03_dataAintNobody_frame;
+
+% cached:
+v = CV03_dataAintNobody_vocabulary();
 sifts = CV03_dataAintNobody_sifts();
 
+% should be equivalent to (but this is much slower):
+%[v, sifts] = CV03_buildVocabulary(images_f);
 
 %%
 bowHistograms = v.bowHistograms;

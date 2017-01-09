@@ -3,6 +3,9 @@ function o = CV03_runSiftOnImages(images)
   % CV03_runSift
   % 
   % images(i) with i starting at 1 is either a 3-channel image or []
+  % this must be a function or array (?)
+  %
+  % [] indicates that we have read past the last image
   
   i = 1;
   image = images(i);

@@ -1,0 +1,170 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>CP06_2_raySpaceAnalysis</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-12-20"><meta name="DC.source" content="CP06_2_raySpaceAnalysis.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">2.1 Extract and visualize four individual views of your captured light field.</a></li><li><a href="#3">Interactive views</a></li><li><a href="#4">2.2 Create the EPIs</a></li><li><a href="#5">EPI 1: Note the objects: purple stick, red/yellow petals, wooden stick</a></li><li><a href="#6">EPI 2: note the red vine, yellow petal</a></li><li><a href="#7">EPI 3: note the text</a></li><li><a href="#8">From these images, I conclude that the text in the background has a slope of about -0.4,</a></li></ul></div><pre class="codeinput"><span class="comment">% For Computational Photography, Project 06, P8146</span>
+<span class="comment">% Task 2</span>
+<span class="comment">%</span>
+<span class="comment">% see html/ for a compiled version of this.</span>
+
+x = load(<span class="string">'IMG_0099__Decoded.LFToolbox.mat'</span>);
+lf = 2 * x.LF; <span class="comment">% 2 * for contrast enhancement</span>
+</pre><h2>2.1 Extract and visualize four individual views of your captured light field.<a name="2"></a></h2><p>I show four angularly parametrized views and one spatially parametrized view ('one point on the focal plane, observed by different virtual cameras')</p><p>Note that the viewpoint is slightly different in each of these images. Also note the boundary artifacts near the border of the image, which arise because I use pixels near the border of the lenses.</p><pre class="codeinput">close <span class="string">all</span>
+
+imshow_in_figure(squeeze(lf(7,3,:,:,1:3)), <span class="string">'Angular view 1'</span>); <span class="comment">% 7,3 instead of 7,1 because that one is unreliable</span>
+imshow_in_figure(squeeze(lf(1,7,:,:,1:3)), <span class="string">'Angular view 2'</span>);
+imshow_in_figure(squeeze(lf(7,15,:,:,1:3)), <span class="string">'Angular view 3'</span>);
+imshow_in_figure(squeeze(lf(15,7,:,:,1:3)), <span class="string">'Angular view 4'</span>);
+
+imshow_in_figure(squeeze(lf(:,:,198,432,1:3)), <span class="string">'Spatial view'</span>);
+</pre><img vspace="5" hspace="5" src="CP06_2_raySpaceAnalysis_01.png" alt=""> <img vspace="5" hspace="5" src="CP06_2_raySpaceAnalysis_02.png" alt=""> <img vspace="5" hspace="5" src="CP06_2_raySpaceAnalysis_03.png" alt=""> <img vspace="5" hspace="5" src="CP06_2_raySpaceAnalysis_04.png" alt=""> <img vspace="5" hspace="5" src="CP06_2_raySpaceAnalysis_05.png" alt=""> <h2>Interactive views<a name="3"></a></h2><p>This is fun to play with</p><pre class="codeinput">close <span class="string">all</span>
+
+LFDispMousePan(lf)
+</pre><pre class="codeoutput">Click and drag to shift perspective
+
+ans = 
+
+  Figure &#12398; (LFDisplay) &#12398;&#12503;&#12525;&#12497;&#12486;&#12451;:
+
+      Number: 1
+        Name: ''
+       Color: [0.9400 0.9400 0.9400]
+    Position: [487 233 626 434]
+       Units: 'pixels'
+
+  GET &#12434;&#20351;&#29992;&#12375;&#12390;&#12377;&#12409;&#12390;&#12398;&#12503;&#12525;&#12497;&#12486;&#12451;&#12434;&#34920;&#31034;
+
+</pre><img vspace="5" hspace="5" src="CP06_2_raySpaceAnalysis_06.png" alt=""> <h2>2.2 Create the EPIs<a name="4"></a></h2><p>Note that the angular parameter runs from left-to right, the spatial parameter downwards in the following images.</p><p>We pan the camera along all horizontal camera positions in the light field There are 15 of these, therefore the EPI is 15 pixels high.</p><p>We note that the slope of points in the scene in this image depends on their depth (parallax).</p><h2>EPI 1: Note the objects: purple stick, red/yellow petals, wooden stick<a name="5"></a></h2><pre class="codeinput">y = 61;
+CP06_show_horizontal_epi(lf, y);
+</pre><img vspace="5" hspace="5" src="CP06_2_raySpaceAnalysis_07.png" alt=""> <img vspace="5" hspace="5" src="CP06_2_raySpaceAnalysis_08.png" alt=""> <img vspace="5" hspace="5" src="CP06_2_raySpaceAnalysis_09.png" alt=""> <h2>EPI 2: note the red vine, yellow petal<a name="6"></a></h2><pre class="codeinput">y = 219;
+CP06_show_horizontal_epi(lf, y);
+</pre><img vspace="5" hspace="5" src="CP06_2_raySpaceAnalysis_10.png" alt=""> <img vspace="5" hspace="5" src="CP06_2_raySpaceAnalysis_11.png" alt=""> <img vspace="5" hspace="5" src="CP06_2_raySpaceAnalysis_12.png" alt=""> <h2>EPI 3: note the text<a name="7"></a></h2><pre class="codeinput">y = 257;
+CP06_show_horizontal_epi(lf, y);
+</pre><img vspace="5" hspace="5" src="CP06_2_raySpaceAnalysis_13.png" alt=""> <img vspace="5" hspace="5" src="CP06_2_raySpaceAnalysis_14.png" alt=""> <img vspace="5" hspace="5" src="CP06_2_raySpaceAnalysis_15.png" alt=""> <h2>From these images, I conclude that the text in the background has a slope of about -0.4,<a name="8"></a></h2><p>the vine in the foreground has slope about 0.4:</p><p>For every 5 pixels up, a pixel belonging to these objects goes 2 to the left/right.</p><p>I will use this in the refocusing.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+% For Computational Photography, Project 06, P8146
+% Task 2
+%
+% see html/ for a compiled version of this.
+
+x = load('IMG_0099__Decoded.LFToolbox.mat');
+lf = 2 * x.LF; % 2 * for contrast enhancement
+
+%% 2.1 Extract and visualize four individual views of your captured light field.
+% I show four angularly parametrized views
+% and one spatially parametrized view ('one point on the focal plane,
+% observed by different virtual cameras')
+%
+% Note that the viewpoint is slightly different in each of these images.
+% Also note the boundary artifacts near the border of the image,
+% which arise because I use pixels near the border of the lenses.
+close all
+
+imshow_in_figure(squeeze(lf(7,3,:,:,1:3)), 'Angular view 1'); % 7,3 instead of 7,1 because that one is unreliable
+imshow_in_figure(squeeze(lf(1,7,:,:,1:3)), 'Angular view 2');
+imshow_in_figure(squeeze(lf(7,15,:,:,1:3)), 'Angular view 3');
+imshow_in_figure(squeeze(lf(15,7,:,:,1:3)), 'Angular view 4');
+
+imshow_in_figure(squeeze(lf(:,:,198,432,1:3)), 'Spatial view');
+
+%% Interactive views
+% This is fun to play with
+close all
+
+LFDispMousePan(lf)
+
+%% 2.2 Create the EPIs
+% Note that the angular parameter runs from left-to right, the spatial
+% parameter downwards in the following images.
+%
+% We pan the camera along all horizontal camera positions in the light field
+% There are 15 of these, therefore the EPI is 15 pixels high.
+%
+% We note that the slope of points in the scene in this image depends on their
+% depth (parallax).
+
+%% EPI 1: Note the objects: purple stick, red/yellow petals, wooden stick
+y = 61;
+CP06_show_horizontal_epi(lf, y);
+
+%% EPI 2: note the red vine, yellow petal
+y = 219; 
+CP06_show_horizontal_epi(lf, y);
+
+%% EPI 3: note the text
+y = 257;
+CP06_show_horizontal_epi(lf, y);
+
+%% From these images, I conclude that the text in the background has a slope of about -0.4,
+% the vine in the foreground has slope about 0.4: 
+%
+% For every 5 pixels up, a pixel belonging to these objects goes 2 to the
+% left/right.
+%
+% I will use this in the refocusing.
+##### SOURCE END #####
+--></body></html>

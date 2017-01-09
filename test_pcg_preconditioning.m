@@ -26,11 +26,6 @@ tol = 1e-6; maxit = size(jn,1); % don't care about iteration count for now
 sbad = pcg(jn, bn, tol,maxit, []); % allow many iterations, no preconditioner
 disp(['pcg error ' num2str(linear_solve_error2(jn, bn, sbad))]);
 
-% using a function that computes jt.j.x comes ... not better? But it does
-% in mathematica.. shouldn't this behave better, numerically?
-s = pcg(@(x) jt * (j * x), bn, tol,maxit, []); % allow many iterations, no preconditioner
-disp(['pcg functional error ' num2str(linear_solve_error2(jn, bn, s))]);
-
 % try to pick a good preconditioner -- the default choice (is there one?) does not do
 % better than none at all
 
@@ -38,8 +33,25 @@ disp(['pcg functional error ' num2str(linear_solve_error2(jn, bn, s))]);
 sgood = jn \ bn; 
 disp(['\ error ' num2str(linear_solve_error2(jn, bn, sgood))]);
 
+%% using a function that computes jt.j.x comes ... not better? But it does
+% in mathematica.. (ConjugateGradientMethod(OnNormalEquations) don't come out the same)
+% shouldn't this behave better, numerically?
+%
+% Why doesn't it even give exactly the same?
+s = pcg(@(x) jt * (j * x), bn, tol,maxit, []); % allow many iterations, no preconditioner
+disp(['pcg functional error ' num2str(linear_solve_error2(jn, bn, s))]);
+
+%% This of course gives exactly the same as passing jn
+sbad = pcg(@(x) jn * x, bn, tol,maxit, []); % allow many iterations, no preconditioner
+disp(['pcg error ' num2str(linear_solve_error2(jn, bn, sbad))]);
+
+
 %% lsqr does poorly?!
 sgood = lsqr(jn, bn); 
+disp(['sgood error ' num2str(linear_solve_error2(jn, bn, sgood))]);
+
+%% lsqr does poorly even without normal equations
+sgood = lsqr(j, b); 
 disp(['sgood error ' num2str(linear_solve_error2(jn, bn, sgood))]);
 
 %% gmres poor
@@ -73,6 +85,21 @@ disp(['pcg error ilutp ' num2str(linear_solve_error2(jn, bn, s))]);
 
 [L,U] = ilu(jn,struct('type','crout','droptol',1e-6));
 s = pcg(jn, bn, tol,maxit,L,U);
+disp(['pcg error crout ' num2str(linear_solve_error2(jn, bn, s))]);
+
+%% <pcg> (not gmres) with ilu (ilutp) with implicit normal equations
+% note that we do not pass jn to pcg
+% This should be how conjgrad_normal behaves.
+% Amazingly, the result is exactly the same as above with jn passed
+% explicitly.
+
+
+[L,U] = ilu(jn,struct('type','ilutp','droptol',1e-6));
+s = pcg(@(x) jt * (j * x), bn, tol,maxit,L,U);
+disp(['pcg error ilutp ' num2str(linear_solve_error2(jn, bn, s))]);
+
+[L,U] = ilu(jn,struct('type','crout','droptol',1e-6));
+s = pcg(@(x) jt * (j * x), bn, tol,maxit,L,U);
 disp(['pcg error crout ' num2str(linear_solve_error2(jn, bn, s))]);
 
 %% minres poor

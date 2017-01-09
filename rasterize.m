@@ -1,6 +1,6 @@
 function out = rasterize(v, p)
 % function out = rasterize(v, p)
-% v: 2x3 matrix containing vertices of triangle
+% v: 2x3 matrix containing vertices of a triangle
 % p: 2xn matrix, containing n pixel coordinates to test
 % out: 1xn binary mask giving true for coordinates inside the triangle
 %

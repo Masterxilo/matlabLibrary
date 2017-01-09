@@ -8,6 +8,8 @@ function [vocabulary, sifts] = CV03_buildVocabulary(images, k_vocabularySize)
   %
   % This is the format returned by
   % CV03_dataAintNobody_vocabulary(), CV03_dataAintNobody_sifts
+  %
+  % See CV03_runSiftOnImages for format of images
   sifts = CV03_runSiftOnImages(images);
   assert(length(sifts) > 0);
   

@@ -8,7 +8,7 @@ userSelectedPoints = false; % set this to true to specify the corresponding poin
 
 %% Selection
 close all
-image1 = face1_1000();
+image1 = face1_white_1000();
 image2 = face2_1000();
 
 if userSelectedPoints
@@ -47,11 +47,11 @@ triplot2(tri, points1);
 
 %% Compute the interpolating movie
 % and save it to morphToolOutput.avi
-delta = 0.25; % in (0,1) controls by how much time each frame of the movie advances
-movieFPS = 3; % frames per second of the final movie
+delta = 1./90; % in (0,1) controls by how much time each frame of the movie advances
+movieFPS = 30; % frames per second of the final movie
 
 f = @(alpha) im2frame(clamp01(...
-  immorph_delaunay(image1, points1, image2, points2, alpha) ...
+  immorph_delaunay(image1, points1, image2, points2, echoIt(alpha)) ...
   ));
 
 F = arrayfun_struct(f, 0:delta:1);
